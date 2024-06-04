@@ -1,0 +1,1 @@
+import { DOMReady } from "./load";
