@@ -1,0 +1,8 @@
+.bs-detector {
+
+    &.bs-detector__speculation {
+        font-style: italic;
+        opacity: .25;
+    }
+
+}
