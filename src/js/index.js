@@ -3,6 +3,11 @@ bsCount = 0;
 
 const BASE = 'bs-detector';
 
+/**
+ * Pipes input `x` through array of functions
+ * @param  {array} fns array of functions to be piped
+ * @returns {*}
+ */
 const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
 
 /**
@@ -195,6 +200,9 @@ const wrapInElement = ( str, className, elem = 'span' ) => {
 	return span;
 }
 
+/**
+ * Creates a BS meter to give an overall impression on the page
+ */
 const createMeter = () => {
     const quarter = Math.floor( wordCount / 4 ),
     container = wrapInElement( 
