@@ -3,6 +3,46 @@
     &.bs-detector__speculation {
         font-style: italic;
         opacity: .25;
+        text-decoration: line-through;
     }
+
+    &.bs-detector__suggestive {
+        color: transparent;
+        text-shadow: 0 0 8px black;
+        &:hover {
+            color: white;
+        }
+    }
+
+    &.bs-detector__emphasis {
+        font-style: italic;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+}
+
+.bs-meter {
+
+    --space: 16px;
+
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 4px;
+    bottom: var( --space );
+    box-shadow: 0 4px 4px black;
+    box-sizing: border-box;
+    color: black;
+    left: var( --space );
+    padding: var( --space );
+    position: fixed;
+    z-index: 99999;
+
+    label { 
+        font: normal 14px/20px sans-serif;
+        display: block; 
+    }
+
+    meter { width: 200px; }
 
 }
