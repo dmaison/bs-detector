@@ -1,9 +1,36 @@
 .bs-detector {
+    
+    position: relative;
+
+    &::before {
+        border-radius: 4px;
+        box-sizing: border-box;
+        display: block;
+        font-size: 10px;
+        font-style: normal;
+        letter-spacing: 1px;
+        line-height: 10px;
+        padding: 4px;
+        position: absolute;
+        text-transform: uppercase;
+        left: 0;
+        bottom: 100%;
+    }
+
+    &.bs-detector__anecdotal {
+        
+    }
 
     &.bs-detector__speculation {
         font-style: italic;
-        opacity: .25;
+        color: rgba( 0, 0, 0, .5 );
         text-decoration: line-through;
+        
+        &:hover::before {
+            background-color: firebrick;
+            content: 'speculative';
+            color: white;
+        }
     }
 
     &.bs-detector__suggestive {
@@ -11,13 +38,27 @@
         text-shadow: 0 0 8px black;
         &:hover {
             color: white;
+            &::before {
+                background-color: cornflowerblue;
+                color: initial;
+                content: 'suggestive';
+                text-shadow: none;
+            }
         }
+        
     }
 
     &.bs-detector__emphasis {
         font-style: italic;
         font-weight: bold;
         text-decoration: underline;
+        &:hover {
+            &::before {
+                background-color: chartreuse;
+                content: 'needs emphasis';
+                font-weight: normal;
+            }
+        }
     }
 
 }

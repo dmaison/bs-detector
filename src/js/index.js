@@ -11,6 +11,12 @@ const BASE = 'bs-detector';
 const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
 
 /**
+ * Denotes anecdotal speech. Basically blockquote
+ * @type {string}
+ */
+const ANECDOTAL = `${BASE}__anecdotal`;
+
+/**
  * Denotes emphasized speech. Denotes words and phrases that can easily be misinterpretted due to bias and other things
  * @type {string}
  */
@@ -45,10 +51,15 @@ const WORDS_EMPHASIZE = [
  * @type {array}
  */
 const WORDS_SUGGESTIVE = [
+    "extremely",
     "cataclysmic",
     "chaotic",
     "conspiracy theory",
     "extraordinary",
+    "great",
+    "genuine",
+    "compelling",
+    "imperative",
     "independent",
     "largely",
     "purely",
@@ -59,7 +70,8 @@ const WORDS_SUGGESTIVE = [
     "truly",
     "tumultuous",
     "unprecedented",
-    "ultimate"
+    "ultimate",
+    "very"
 ];
 
 /**
@@ -70,6 +82,7 @@ const WORDS_SPECULATIVE = [
     "assume", 
     "assumption", 
     "assuming",
+    "appear",
     "believe", 
     "consider", 
     "could", 
@@ -86,6 +99,7 @@ const WORDS_SPECULATIVE = [
     "might", 
     "possibly", 
     "probably", 
+    "seemed",
     "speculate", 
     "suggest", 
     "think",
@@ -95,17 +109,29 @@ const WORDS_SPECULATIVE = [
 ];
 
 /**
+ * Handles pattern check and bs count
+ * @param {string} str 
+ * @param {RegExp} reg 
+ * @param {function} map 
+ */
+const searchString = async ( str, reg, map ) => {
+    const matches = str.match( reg ) || [];
+    if( matches.length > 0 ){
+        matches.forEach( map );
+        bsCount += matches.length;
+    }
+}
+
+/**
  * Checks a string for speech that requires emphasis
  * @param {string} sentence 
  * @returns {string|HTMLElement} 
  */
 const checkForUnemphasized = ( sentence ) => {
-	const reg = new RegExp( `\\b(${ WORDS_EMPHASIZE.join( '|' ) })\\b`, 'gi' ),
-    { value: matches=[] } = sentence.matchAll( reg ).next();
-    matches.forEach(( term ) => {
+	const reg = new RegExp( `\\b(${ WORDS_EMPHASIZE.join( '|' ) })\\b`, 'gi' );
+    searchString( sentence, reg, ( term ) => {
         sentence = sentence.replace( term, wrapInElement( term, EMPHASIS ).outerHTML )
     });
-    bsCount += matches.length;
 	return sentence;
 }
 
@@ -130,13 +156,10 @@ const checkForSpeculation = ( sentence ) => {
  * @returns {string|HTMLElement} 
  */
 const checkForSuggestion = ( sentence ) => {
-	const reg = new RegExp( `\\b(${ WORDS_SUGGESTIVE.join( '|' ) })\\b`, 'gi' ),
-    { value: matches=[] } = sentence.matchAll( reg ).next();
-    matches.forEach(( term ) => {
-        sentence = sentence.replace( term, wrapInElement( term, SUGGESTIVE ).outerHTML )
+	const reg = new RegExp( `\\b(${ WORDS_SUGGESTIVE.join( '|' ) })\\b`, 'gi' );
+    searchString( sentence, reg, ( term ) => {
+        sentence = sentence.replace( term, wrapInElement( term, SUGGESTIVE ).outerHTML );
     });
-
-    bsCount += matches.length;
 	return sentence;
 }
 
@@ -167,7 +190,7 @@ const getSentences = ( elem ) => {
  * Retrieve elements that contain article text nodes
  */
 const getElems = () => {
-	const main = document.querySelector( 'main' ),
+	const main = document.querySelector( 'body' ),
 	walker = document.createTreeWalker( 
 		main, 
 		NodeFilter.SHOW_TEXT,
@@ -205,17 +228,19 @@ const wrapInElement = ( str, className, elem = 'span' ) => {
  */
 const createMeter = () => {
     const quarter = Math.floor( wordCount / 4 ),
+    ratings = [ 'Propaganda', 'Mostly BS', 'Considerable BS', 'Somewhat BS', 'Trustable' ],
+    rating = Math.min( Math.floor( wordCount / bsCount ) - 1, 4 ),
     container = wrapInElement( 
         `
-            <label for="bs-rating">BS Rating</label>
+            <label for="bs-rating" data-rating="${rating}">BS Rating: ${ ratings[ rating ] }</label>
             <meter 
                 id="bs-rating" 
                 min="0"
                 low="${ quarter }"
-                optimum="${ ( Math.floor( wordCount / 2 ) ) }"
-                high="${ ( Math.floor( wordCount / 2 ) ) + quarter }"
+                optimum="0"
+                high="${ quarter * 2 }"
                 value="${ bsCount }" 
-                max="${ wordCount }">
+                max="${ quarter * 3 }">
             </meter>
         `, 
         'bs-meter', 
@@ -233,7 +258,7 @@ const init = () => {
 
     elems.forEach(( elem ) => {
         const sentences = getSentences( elem ).map(( elem ) => {
-            return pipe( checkForSpeculation, checkForSuggestion, checkForUnemphasized )( elem ) 
+            return pipe( checkForSpeculation, checkForSuggestion, checkForUnemphasized )( elem );
         });
         elem.innerHTML = sentences.join( '.' );
     });
