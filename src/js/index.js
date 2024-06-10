@@ -51,6 +51,7 @@ const WORDS_EMPHASIZE = [
  * @type {array}
  */
 const WORDS_SUGGESTIVE = [
+    "actually",
     "extremely",
     "cataclysmic",
     "chaotic",
@@ -65,6 +66,7 @@ const WORDS_SUGGESTIVE = [
     "purely",
     "really",
     "remarkable",
+    "restrictive",
     "shameful",
     "slight", 
     "truly",
