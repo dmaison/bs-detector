@@ -17,10 +17,6 @@
         bottom: 100%;
     }
 
-    &.bs-detector__anecdotal {
-        
-    }
-
     &.bs-detector__speculation {
         font-style: italic;
         color: rgba( 0, 0, 0, .5 );
